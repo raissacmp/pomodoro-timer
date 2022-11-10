@@ -1,7 +1,12 @@
-import { useState } from "react";
+import { ThemeProvider } from "styled-components";
+
+import { GlobalStyle } from "./styles/global";
+import { defaultTheme } from "./styles/themes/default";
 
 export function App() {
-  const [count, setCount] = useState(0);
-
-  return <h1>Oi</h1>;
+  return (
+    <ThemeProvider theme={defaultTheme}>
+      <h1>Oi</h1>
+    </ThemeProvider>
+  );
 }
