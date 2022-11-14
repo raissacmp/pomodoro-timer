@@ -37,7 +37,7 @@ interface Cycle {
 export function Home() {
   const [cycles, setCycles] = useState<Cycle[]>([]);
   const [activeCycleId, setActiveCycleId] = useState<string | null>(null);
-  const [amountSecondsPassed, setamountSecondsPassed] = useState(0);
+  const [amountSecondsPassed, setAmountSecondsPassed] = useState(0);
 
   // register retorna varias funções como por exemplo: onChange
   const { register, handleSubmit, watch, reset } = useForm<NewCycleFormData>({
@@ -51,12 +51,17 @@ export function Home() {
   const activeCycle = cycles.find((cycle) => cycle.id === activeCycleId); // percorre os ciclos e encontra qual ciclo é igual ao ciclo ativo
 
   useEffect(() => {
+    let interval: number;
     if (activeCycle) {
-      setInterval(() => {
-        setamountSecondsPassed(
+      interval = setInterval(() => {
+        setAmountSecondsPassed(
           differenceInSeconds(new Date(), activeCycle.startDate) // diferença de segundos entre o horario atual e o horario do play
         );
       });
+
+      return () => {
+        clearInterval(interval);
+      };
     }
   }, [activeCycle]);
 
@@ -73,6 +78,7 @@ export function Home() {
 
     setCycles((state) => [...state, newCycle]); // pegar tds os ciclos que ja exitesm no array e adc o novo do final
     setActiveCycleId(id);
+    setAmountSecondsPassed(0);
 
     reset(); // reseta o form após enviado, para isso precisa passar o defaultValues
   }
@@ -87,6 +93,14 @@ export function Home() {
 
   const minutes = String(minutesAmount).padStart(2, "0"); // especifico que o valor tem q ter dois caracteres, caso n tenha preencho com o 0
   const seconds = String(secondsAmount).padStart(2, "0");
+
+  // alterando o titulo page
+
+  useEffect(() => {
+    if (activeCycle) {
+      document.title = `${minutes}:${seconds}`;
+    }
+  }, [minutes, seconds, activeCycle]);
 
   const task = watch("task"); // assiste o campo de task
   const isSubmitDesabled = !task;
