@@ -1,5 +1,7 @@
 import { Play } from "phosphor-react";
 import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import * as zod from "zod"; // a lib n possui um export default
 import {
   FormContainer,
   HomeContainer,
@@ -10,12 +12,30 @@ import {
   MinutesAmountInput,
 } from "../Home/styles";
 
+// schema que vai definir os formatos das informações e as validações
+
+const newCycleFormValidationSchema = zod.object({
+  task: zod.string().min(1, "Informe a tarefa"), // uma string com no minimo um caracter
+  minutesAmount: zod
+    .number()
+    .min(5, "O ciclo precisa ser de no mínimo 5 minutos")
+    .max(60, "O ciclo precisa ser de no máximo 60 minutos"), // um numero o valor minimo de 5 e o valor maximo de 60
+});
+
+type NewCycleFormData = zod.infer<typeof newCycleFormValidationSchema>; // tipa automaticamente pela definição da variavel
+
 export function Home() {
   // register retorna varias funções como por exemplo: onChange
 
-  const { register, handleSubmit, watch } = useForm();
+  const { register, handleSubmit, watch } = useForm<NewCycleFormData>({
+    resolver: zodResolver(newCycleFormValidationSchema),
+    defaultValues: {
+      task: "",
+      minutesAmount: 0,
+    },
+  });
 
-  function handleCreateNewCycle(data: any) {
+  function handleCreateNewCycle(data: NewCycleFormData) {
     // o data retorna os dados dos inputs do form
     console.log(
       "🚀 ~ file: index.tsx ~ line 20 ~ handleCreateNewCycle ~ data",
