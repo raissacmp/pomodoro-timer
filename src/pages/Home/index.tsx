@@ -27,7 +27,7 @@ type NewCycleFormData = zod.infer<typeof newCycleFormValidationSchema>; // tipa 
 export function Home() {
   // register retorna varias funções como por exemplo: onChange
 
-  const { register, handleSubmit, watch } = useForm<NewCycleFormData>({
+  const { register, handleSubmit, watch, reset } = useForm<NewCycleFormData>({
     resolver: zodResolver(newCycleFormValidationSchema),
     defaultValues: {
       task: "",
@@ -41,6 +41,7 @@ export function Home() {
       "🚀 ~ file: index.tsx ~ line 20 ~ handleCreateNewCycle ~ data",
       data
     );
+    reset(); // reseta o form após enviado, para isso precisa passar o defaultValues
   }
 
   const task = watch("task"); // assiste o campo de task
