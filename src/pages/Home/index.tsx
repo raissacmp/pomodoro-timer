@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Play } from "phosphor-react";
+import { Play, HandPalm } from "phosphor-react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as zod from "zod"; // a lib n possui um export default
@@ -13,6 +13,7 @@ import {
   StartCountdownButton,
   TaskInput,
   MinutesAmountInput,
+  StopCountdownButton,
 } from "../Home/styles";
 
 // schema que vai definir os formatos das informações e as validações
@@ -32,10 +33,12 @@ interface Cycle {
   task: string;
   minutesAmount: number;
   startDate: Date;
+  interruptedDate?: Date;
 }
 
 export function Home() {
   const [cycles, setCycles] = useState<Cycle[]>([]);
+  console.log("🚀 ~ file: index.tsx ~ line 41 ~ Home ~ cycles", cycles);
   const [activeCycleId, setActiveCycleId] = useState<string | null>(null);
   const [amountSecondsPassed, setAmountSecondsPassed] = useState(0);
 
@@ -64,6 +67,19 @@ export function Home() {
       };
     }
   }, [activeCycle]);
+
+  function handleInterruptCycle() {
+    setCycles(
+      cycles.map((cycle) => {
+        if (cycle.id === activeCycleId) {
+          return { ...cycle, interruptedDate: new Date() };
+        } else {
+          return cycle;
+        }
+      })
+    );
+    setActiveCycleId(null);
+  }
 
   function handleCreateNewCycle(data: NewCycleFormData) {
     const id = String(new Date().getTime());
@@ -117,6 +133,7 @@ export function Home() {
             placeholder="Dê um nome para o seu projeto"
             list="task-suggestions" // trás as sugestões definidas no datalist
             {...register("task")} // pega todas funções e retornos do registe e coloca no nosso input e o parametro "task" faz a mesma coisa que o name
+            disabled={!!activeCycle} // desabilitar caso tenha algum ciclo ativo
           />
           <datalist id="task-suggestions">
             <option value="Projeto 1" />
@@ -132,6 +149,7 @@ export function Home() {
             step={5} // pular de 5 em 5
             min={5} // começar com 5
             max={60} // maximo 60
+            disabled={!!activeCycle}
             {...register("minutesAmount", { valueAsNumber: true })} // objeto de configurações, o valor desse input pra numero
           />
           <span>minutos</span>
@@ -143,9 +161,18 @@ export function Home() {
           <span>{seconds[0]}</span>
           <span>{seconds[1]}</span>
         </CountdownContainer>
-        <StartCountdownButton disabled={isSubmitDesabled} type="submit">
-          <Play size={24} /> Começar
-        </StartCountdownButton>
+        {activeCycle ? (
+          <StopCountdownButton
+            type="button"
+            onClick={() => handleInterruptCycle()}
+          >
+            <HandPalm size={24} /> Interromper
+          </StopCountdownButton>
+        ) : (
+          <StartCountdownButton disabled={isSubmitDesabled} type="submit">
+            <Play size={24} /> Começar
+          </StartCountdownButton>
+        )}
       </form>
     </HomeContainer>
   );
