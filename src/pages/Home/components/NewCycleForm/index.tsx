@@ -26,38 +26,6 @@ export function NewCycleForm() {
     },
   });
 
-  useEffect(() => {
-    let interval: number;
-
-    if (activeCycle) {
-      interval = setInterval(() => {
-        const secondsDifference = differenceInSeconds(
-          new Date(),
-          activeCycle.startDate
-        ); // diferença de segundos entre o horario atual e o horario do play
-        if (secondsDifference >= totalSeconds) {
-          setCycles((state) =>
-            state.map((cycle) => {
-              if (cycle.id === activeCycleId) {
-                return { ...cycle, finishDate: new Date() };
-              } else {
-                return cycle;
-              }
-            })
-          );
-          setAmountSecondsPassed(totalSeconds);
-          clearInterval(interval);
-        } else {
-          setAmountSecondsPassed(secondsDifference);
-        }
-      }, 1000);
-
-      return () => {
-        clearInterval(interval);
-      };
-    }
-  }, [activeCycle, totalSeconds, activeCycleId]);
-
   return (
     <FormContainer>
       <label htmlFor="task">Vou trabalhar em</label>
