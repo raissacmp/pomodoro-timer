@@ -1,30 +1,12 @@
-import { zodResolver } from "@hookform/resolvers/zod";
-import * as zod from "zod"; // a lib n possui um export default
-import { useForm } from "react-hook-form";
-import { differenceInSeconds } from "date-fns";
-
-import { useEffect } from "react";
+import { useContext, useEffect } from "react";
 
 import { FormContainer, TaskInput, MinutesAmountInput } from "./styles";
+import { CyclesContext } from "../..";
+import { useFormContext } from "react-hook-form";
 
 export function NewCycleForm() {
-  // register retorna varias funções como por exemplo: onChange
-  const { register, handleSubmit, watch, reset } = useForm<NewCycleFormData>({
-    resolver: zodResolver(newCycleFormValidationSchema),
-    defaultValues: {
-      task: "",
-      minutesAmount: 0,
-    },
-  });
-
-  // register retorna varias funções como por exemplo: onChange
-  const { register, handleSubmit, watch, reset } = useForm<NewCycleFormData>({
-    resolver: zodResolver(newCycleFormValidationSchema),
-    defaultValues: {
-      task: "",
-      minutesAmount: 0,
-    },
-  });
+  const { activeCycle } = useContext(CyclesContext);
+  const { register } = useFormContext(); // a lib tem seu próprio hook
 
   return (
     <FormContainer>
@@ -49,7 +31,7 @@ export function NewCycleForm() {
         id="minutesAmount"
         placeholder="00"
         step={5} // pular de 5 em 5
-        min={1} // começar com 5
+        min={5} // começar com 5
         max={60} // maximo 60
         disabled={!!activeCycle}
         {...register("minutesAmount", { valueAsNumber: true })} // objeto de configurações, o valor desse input pra numero
