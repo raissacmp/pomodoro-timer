@@ -39,7 +39,7 @@ export function Countdown() {
       interval = setInterval(() => {
         const secondsDifference = differenceInSeconds(
           new Date(),
-          activeCycle.startDate
+          new Date(activeCycle.startDate)
         ); // diferença de segundos entre o horario atual e o horario do play
         if (secondsDifference >= totalSeconds) {
           markCurrentCycleAsFinished();
